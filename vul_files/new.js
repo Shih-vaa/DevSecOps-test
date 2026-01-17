@@ -1,82 +1,119 @@
-// cart_service.js
 const express = require("express");
-const bodyParser = require("body-parser");
-const mysql = require("mysql"); // Known for SQL injection if misused
-const crypto = require("crypto"); // Unused import to simulate bad practice
-const outdatedLib = require("request"); // Deprecated package (vulnerable)
-
-// Hardcoded credentials (BAD)
-const DB_USER = "root";
-const DB_PASS = "password123";
-const API_KEY = "HARDCODED-API-KEY-XYZ";
+const mysql = require("mysql2/promise");
+const helmet = require("helmet");
+const escapeHtml = require("escape-html");
 
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(helmet());
+
+// Load secrets from environment variables
+const DB_USER = process.env.DB_USER;
+const DB_PASS = process.env.DB_PASS;
+const API_KEY = process.env.API_KEY;
 
 // DB connection
-const db = mysql.createConnection({
-  host: "localhost",
-  user: DB_USER,
-  password: DB_PASS,
-  database: "cartdb"
+async function connectToDB() {
+  const db = await mysql.createConnection({
+    host: "localhost",
+    user: DB_USER,
+    password: DB_PASS,
+    database: "cartdb"
+  });
+  return db;
+}
+
+// Minimal auth helpers
+function is_authenticated(req) {
+  // Simple placeholder: check for 'Authorization' header
+  return req.headers.authorization !== undefined;
+}
+
+function is_admin(req) {
+  // Simple placeholder: check for 'Admin' header
+  return req.headers.admin !== undefined;
+}
+
+// Connect to DB
+let db;
+connectToDB().then((connection) => {
+  db = connection;
+  console.log("Connected to database");
 });
-db.connect();
 
 // --- SQL Injection + Insecure Deserialization ---
-app.post("/add", (req, res) => {
-  // Directly trusting user JSON (no validation) -> insecure deserialization
-  const item = req.body;
+app.post("/add", async (req, res) => {
+  if (!is_authenticated(req)) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
 
-  // SQL Injection: concatenating user input
-  const query = `INSERT INTO cart (product, quantity, user_id) 
-                 VALUES ('${item.product}', ${item.quantity}, ${item.user_id})`;
-  db.query(query, (err) => {
-    if (err) {
-      // Insufficient logging (no IP/user context)
-      console.log("Error inserting into cart");
-      res.status(500).send("Error");
-    } else {
-      res.send(`Added item: ${item.product}`);
-    }
-  });
+  try {
+    const item = req.body;
+    const query = "INSERT INTO cart (product, quantity, user_id) VALUES (?, ?, ?)";
+    const [result] = await db.execute(query, [item.product, item.quantity, item.user_id]);
+    res.send(`Added item: ${escapeHtml(item.product)}`);
+  } catch (err) {
+    console.error("Error inserting into cart:", err);
+    res.status(500).send("Error");
+  }
 });
 
 // --- Broken Access Control + XSS ---
-app.get("/view", (req, res) => {
-  const userId = req.query.user; // User can supply *any* ID
+app.get("/view", async (req, res) => {
+  if (!is_authenticated(req)) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
 
-  // No access control: attacker can view any user’s cart
-  db.query(`SELECT * FROM cart WHERE user_id=${userId}`, (err, results) => {
-    if (err) return res.status(500).send("DB error");
+  try {
+    const userId = req.query.user;
+    const query = "SELECT * FROM cart WHERE user_id = ?";
+    const [results] = await db.execute(query, [userId]);
 
-    // XSS: Reflecting unsanitized user input
-    let html = `<h1>Cart for User ${userId}</h1><ul>`;
+    let html = `Cart for User ${escapeHtml(userId)}`;
     results.forEach((item) => {
-      html += `<li>${item.product} (Qty: ${item.quantity})</li>`;
+      html += `${escapeHtml(item.product)} (Qty: ${escapeHtml(item.quantity)})`;
     });
-    html += "</ul>";
+    html += "";
     res.send(html);
-  });
+  } catch (err) {
+    console.error("Error viewing cart:", err);
+    res.status(500).send("Error");
+  }
 });
 
 // --- Broken Access Control: no authentication for admin ---
-app.get("/admin", (req, res) => {
-  db.query("SELECT * FROM cart", (err, results) => {
-    if (err) return res.status(500).send("DB error");
+app.get("/admin", async (req, res) => {
+  if (!is_authenticated(req) || !is_admin(req)) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
 
-    let html = "<h1>Admin Panel</h1><ul>";
+  try {
+    const query = "SELECT * FROM cart";
+    const [results] = await db.execute(query);
+
+    let html = "Admin Panel";
     results.forEach((item) => {
-      html += `<li>User ${item.user_id}: ${item.product} x${item.quantity}</li>`;
+      html += `User ${escapeHtml(item.user_id)}: ${escapeHtml(item.product)} x${escapeHtml(item.quantity)}`;
     });
-    html += "</ul>";
+    html += "";
     res.send(html);
-  });
+  } catch (err) {
+    console.error("Error viewing admin panel:", err);
+    res.status(500).send("Error");
+  }
 });
 
 // --- Invalid Redirects ---
 app.get("/redirect", (req, res) => {
-  const url = req.query.url; // No validation
-  res.redirect(url); // Open redirect vulnerability
+  const url = req.query.url;
+  if (url.startsWith("http://localhost:3000")) {
+    res.redirect(url);
+  } else {
+    res.status(400).send("Invalid redirect URL");
+  }
 });
 
 app.listen(3000, () => {

@@ -7,15 +7,15 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	_ "github.com/mattn/go-sqlite3" // Example vulnerable/outdated dependency
-	_ "crypto/md5"                  // unused import
+	"os"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
-	// Hardcoded credentials (Bad Practice)
-	dbUser     = "admin"
-	dbPassword = "admin123"
-	apiKey     = "HARDCODED-API-KEY-123456"
+	dbUser     = os.Getenv("DB_USER")
+	dbPassword = os.Getenv("DB_PASSWORD")
+	apiKey     = os.Getenv("API_KEY")
 )
 
 type CartItem struct {
@@ -26,6 +26,16 @@ type CartItem struct {
 }
 
 var db *sql.DB
+
+func is_authenticated(r *http.Request) bool {
+	// Simple authentication check using a request header
+	return r.Header.Get("X-Auth-Token") != ""
+}
+
+func is_admin(r *http.Request) bool {
+	// Simple admin check using a request header
+	return r.Header.Get("X-Admin-Token") != ""
+}
 
 func main() {
 	var err error
@@ -44,70 +54,124 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-// SQL Injection vulnerability + Insecure Deserialization
 func addToCart(w http.ResponseWriter, r *http.Request) {
-	var item CartItem
-	// Insecure deserialization: blindly decoding user input
-	json.NewDecoder(r.Body).Decode(&item)
+	if !is_authenticated(r) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
-	// SQL Injection vulnerability: no parameterized queries
-	query := fmt.Sprintf("INSERT INTO cart (product, quantity, user_id) VALUES ('%s', %d, %d)",
-		item.Product, item.Quantity, item.UserID)
-	_, err := db.Exec(query)
+	var item CartItem
+	err := json.NewDecoder(r.Body).Decode(&item)
 	if err != nil {
-		// Insufficient logging (not recording user, IP, etc.)
-		log.Println("Error inserting into cart")
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	// Use parameterized queries to prevent SQL injection
+	query := "INSERT INTO cart (product, quantity, user_id) VALUES (?, ?, ?)"
+	_, err = db.Exec(query, item.Product, item.Quantity, item.UserID)
+	if err != nil {
+		log.Printf("Error inserting into cart: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
 	fmt.Fprintf(w, "Item added: %s", item.Product)
 }
 
-// Broken Access Control + XSS
 func viewCart(w http.ResponseWriter, r *http.Request) {
-	userID := r.URL.Query().Get("user") // user controls the ID
+	if !is_authenticated(r) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
-	// No access control: any user can view any cart by passing another user ID
-	rows, _ := db.Query("SELECT id, product, quantity, user_id FROM cart WHERE user_id=" + userID)
+	userID := r.URL.Query().Get("user")
+	if userID == "" {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	// Use parameterized queries to prevent SQL injection
+	query := "SELECT id, product, quantity, user_id FROM cart WHERE user_id = ?"
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		log.Printf("Error querying cart: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
 
 	var items []CartItem
 	for rows.Next() {
 		var it CartItem
-		rows.Scan(&it.ID, &it.Product, &it.Quantity, &it.UserID)
+		err = rows.Scan(&it.ID, &it.Product, &it.Quantity, &it.UserID)
+		if err != nil {
+			log.Printf("Error scanning row: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
 		items = append(items, it)
 	}
 
-	// XSS: reflecting user-controlled input directly
 	tmpl := template.Must(template.New("view").Parse(`
-		<h1>Cart for User {{.User}}</h1>
-		<p>Showing results for user: {{.User}}</p>
-		<ul>
+		Cart for User {{.User}}
+		Showing results for user: {{.User}}
+		
 			{{range .Items}}
-				<li>{{.Product}} (Qty: {{.Quantity}})</li>
+				{{.Product}} (Qty: {{.Quantity}})
 			{{end}}
-		</ul>
+		
 	`))
 	tmpl.Execute(w, map[string]interface{}{
-		"User":  userID,
+		"User":  template.HTML(userID), // Escape user-controlled input
 		"Items": items,
 	})
 }
 
-// Broken Access Control: no authentication for admin panel
 func adminPanel(w http.ResponseWriter, r *http.Request) {
-	rows, _ := db.Query("SELECT id, product, quantity, user_id FROM cart")
+	if !is_admin(r) {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
 
-	fmt.Fprintln(w, "<h1>Admin Panel</h1><ul>")
+	// Use parameterized queries to prevent SQL injection
+	rows, err := db.Query("SELECT id, product, quantity, user_id FROM cart")
+	if err != nil {
+		log.Printf("Error querying cart: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	fmt.Fprintln(w, "Admin Panel")
 	for rows.Next() {
 		var it CartItem
-		rows.Scan(&it.ID, &it.Product, &it.Quantity, &it.UserID)
-		fmt.Fprintf(w, "<li>User %d: %s (x%d)</li>", it.UserID, it.Product, it.Quantity)
+		err = rows.Scan(&it.ID, &it.Product, &it.Quantity, &it.UserID)
+		if err != nil {
+			log.Printf("Error scanning row: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		fmt.Fprintf(w, "User %d: %s (x%d)", it.UserID, it.Product, it.Quantity)
 	}
-	fmt.Fprintln(w, "</ul>")
+	fmt.Fprintln(w, "")
 }
 
-// Invalid Redirects/Forwards
 func redirectHandler(w http.ResponseWriter, r *http.Request) {
 	target := r.URL.Query().Get("url")
-	// No validation -> attacker can redirect to malicious site
-	http.Redirect(w, r, target, http.StatusFound)
+	if target == "" {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	// Validate redirect target using an allowlist
+	allowlist := []string{"http://example.com", "https://example.com"}
+	for _, allowed := range allowlist {
+		if target == allowed {
+			http.Redirect(w, r, target, http.StatusFound)
+			return
+		}
+	}
+
+	http.Error(w, "Forbidden", http.StatusForbidden)
 }
