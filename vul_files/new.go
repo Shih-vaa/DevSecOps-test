@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -27,14 +28,26 @@ type CartItem struct {
 
 var db *sql.DB
 
+// is_authenticated checks if the request is authenticated
 func is_authenticated(r *http.Request) bool {
 	// Simple authentication check using a request header
-	return r.Header.Get("X-Auth-Token") != ""
+	token := r.Header.Get("X-Auth-Token")
+	if token == "" {
+		log.Println("Authentication failed: missing token")
+		return false
+	}
+	return true
 }
 
+// is_admin checks if the request is from an admin
 func is_admin(r *http.Request) bool {
 	// Simple admin check using a request header
-	return r.Header.Get("X-Admin-Token") != ""
+	token := r.Header.Get("X-Admin-Token")
+	if token == "" {
+		log.Println("Admin check failed: missing token")
+		return false
+	}
+	return true
 }
 
 func main() {
@@ -122,10 +135,11 @@ func viewCart(w http.ResponseWriter, r *http.Request) {
 			{{end}}
 		
 	`))
-	tmpl.Execute(w, map[string]interface{}{
-		"User":  template.HTML(userID), // Escape user-controlled input
+	data := map[string]interface{}{
+		"User":  template.HTMLEscapeString(userID), // Escape user-controlled input
 		"Items": items,
-	})
+	}
+	tmpl.Execute(w, data)
 }
 
 func adminPanel(w http.ResponseWriter, r *http.Request) {
@@ -171,6 +185,12 @@ func redirectHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, target, http.StatusFound)
 			return
 		}
+	}
+
+	// Check if the target is a same-origin URL
+	if strings.HasPrefix(target, "/") {
+		http.Redirect(w, r, target, http.StatusFound)
+		return
 	}
 
 	http.Error(w, "Forbidden", http.StatusForbidden)

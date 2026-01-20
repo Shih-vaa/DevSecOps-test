@@ -44,6 +44,7 @@ connectToDB().then((connection) => {
 // --- SQL Injection + Insecure Deserialization ---
 app.post("/add", async (req, res) => {
   if (!is_authenticated(req)) {
+    console.log("Unauthorized access attempt to /add");
     res.status(401).send("Unauthorized");
     return;
   }
@@ -52,6 +53,7 @@ app.post("/add", async (req, res) => {
     const item = req.body;
     const query = "INSERT INTO cart (product, quantity, user_id) VALUES (?, ?, ?)";
     const [result] = await db.execute(query, [item.product, item.quantity, item.user_id]);
+    console.log(`Added item: ${escapeHtml(item.product)} to cart`);
     res.send(`Added item: ${escapeHtml(item.product)}`);
   } catch (err) {
     console.error("Error inserting into cart:", err);
@@ -62,6 +64,7 @@ app.post("/add", async (req, res) => {
 // --- Broken Access Control + XSS ---
 app.get("/view", async (req, res) => {
   if (!is_authenticated(req)) {
+    console.log("Unauthorized access attempt to /view");
     res.status(401).send("Unauthorized");
     return;
   }
@@ -75,7 +78,7 @@ app.get("/view", async (req, res) => {
     results.forEach((item) => {
       html += `${escapeHtml(item.product)} (Qty: ${escapeHtml(item.quantity)})`;
     });
-    html += "";
+    console.log(`Viewed cart for user: ${escapeHtml(userId)}`);
     res.send(html);
   } catch (err) {
     console.error("Error viewing cart:", err);
@@ -86,6 +89,7 @@ app.get("/view", async (req, res) => {
 // --- Broken Access Control: no authentication for admin ---
 app.get("/admin", async (req, res) => {
   if (!is_authenticated(req) || !is_admin(req)) {
+    console.log("Unauthorized access attempt to /admin");
     res.status(401).send("Unauthorized");
     return;
   }
@@ -98,7 +102,7 @@ app.get("/admin", async (req, res) => {
     results.forEach((item) => {
       html += `User ${escapeHtml(item.user_id)}: ${escapeHtml(item.product)} x${escapeHtml(item.quantity)}`;
     });
-    html += "";
+    console.log("Viewed admin panel");
     res.send(html);
   } catch (err) {
     console.error("Error viewing admin panel:", err);
@@ -109,9 +113,12 @@ app.get("/admin", async (req, res) => {
 // --- Invalid Redirects ---
 app.get("/redirect", (req, res) => {
   const url = req.query.url;
-  if (url.startsWith("http://localhost:3000")) {
+  const allowedRedirects = ["http://localhost:3000/add", "http://localhost:3000/view", "http://localhost:3000/admin"];
+  if (allowedRedirects.includes(url)) {
+    console.log(`Redirected to: ${url}`);
     res.redirect(url);
   } else {
+    console.log("Invalid redirect URL");
     res.status(400).send("Invalid redirect URL");
   }
 });
