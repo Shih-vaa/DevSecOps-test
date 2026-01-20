@@ -15,20 +15,22 @@ function is_admin() {
 // Read password from environment variable
 const password = process.env.PASSWORD;
 
-// Log test message
-console.log('test');
+// Log test message with security logging
+console.log('Security Log: test');
 
-// Example usage of authentication helpers
+// Example usage of authentication helpers with logging
 if (is_authenticated()) {
-    console.log('Authenticated');
+    console.log('Security Log: Authenticated');
     if (is_admin()) {
-        console.log('Admin');
+        console.log('Security Log: Admin');
     }
+} else {
+    console.log('Security Log: Unauthenticated');
 }
 
-// Example of secure password usage
+// Example of secure password usage with logging
 if (password) {
-    console.log('Password set');
+    console.log('Security Log: Password set');
 } else {
-    console.log('Password not set');
+    console.log('Security Log: Password not set');
 }

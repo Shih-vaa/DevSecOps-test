@@ -1,11 +1,11 @@
 {
-  "run_id": "20260117T143709Z",
+  "run_id": "20260120T194007Z",
   "repository": "Shih-vaa/DevSecOps-test",
-  "generated_at": "2026-01-17T14:37:21.239961+00:00",
+  "generated_at": "2026-01-20T19:40:17.559631+00:00",
   "summary": {
     "num_files_scanned": 12,
     "num_files_changed": 3,
-    "total_issues": 22
+    "total_issues": 14
   },
   "files": [
     {
@@ -54,28 +54,56 @@
       "path": "test.js",
       "issues": [
         {
-          "line": 1,
-          "type": "VULNERABILITY",
-          "severity": "blocker",
-          "message": "Hardcoded password detected. Use environment variables (process.env) or secure configuration management instead.",
-          "rule": "js:S2068",
+          "line": 5,
+          "type": "CODE_SMELL",
+          "severity": "medium",
+          "message": "Insufficient logging: Security-related function/endpoint lacks proper logging. Add logging for security events to enable monitoring and incident response.",
+          "rule": "js:S2629",
           "component": ":temp_test.js",
           "project": "",
-          "hash": "d4221dcf7b354e15cec76798e38e111f",
+          "hash": "203fecaaf6c3bba37c98705685dfd508",
           "textRange": {
-            "startLine": 1,
-            "endLine": 1,
+            "startLine": 5,
+            "endLine": 5,
             "startOffset": 0,
-            "endOffset": 53
+            "endOffset": 29
           },
           "flows": [],
-          "effort": "15min",
-          "debt": "15min",
+          "effort": "10min",
+          "debt": "10min",
           "assignee": "",
           "author": "",
           "tags": [
             "security",
-            "credentials"
+            "logging"
+          ],
+          "scope": "MAIN",
+          "quickFixAvailable": false,
+          "messageFormattings": []
+        },
+        {
+          "line": 10,
+          "type": "CODE_SMELL",
+          "severity": "medium",
+          "message": "Insufficient logging: Security-related function/endpoint lacks proper logging. Add logging for security events to enable monitoring and incident response.",
+          "rule": "js:S2629",
+          "component": ":temp_test.js",
+          "project": "",
+          "hash": "65576aec018c16ec9eedb79a0fb088a3",
+          "textRange": {
+            "startLine": 10,
+            "endLine": 10,
+            "startOffset": 0,
+            "endOffset": 21
+          },
+          "flows": [],
+          "effort": "10min",
+          "debt": "10min",
+          "assignee": "",
+          "author": "",
+          "tags": [
+            "security",
+            "logging"
           ],
           "scope": "MAIN",
           "quickFixAvailable": false,
@@ -83,7 +111,7 @@
         }
       ],
       "fixes_applied": {
-        "ai_remediated": 1,
+        "ai_remediated": 2,
         "confidence_score": 0.9,
         "model_used": "llama-3.3-70b-versatile"
       }
@@ -106,129 +134,17 @@
       "path": "vul_files/new.go",
       "issues": [
         {
-          "line": 54,
-          "type": "VULNERABILITY",
-          "severity": "blocker",
-          "message": "Potential SQL injection vulnerability detected. Use parameterized queries with placeholders ($1, $2, etc.) instead of string concatenation or fmt.Sprintf.",
-          "rule": "go:S2077",
-          "component": ":temp_new.go",
-          "project": "",
-          "hash": "f07ac2053f6060f6f9835f232c4d58ab",
-          "textRange": {
-            "startLine": 54,
-            "endLine": 54,
-            "startOffset": 0,
-            "endOffset": 92
-          },
-          "flows": [],
-          "effort": "30min",
-          "debt": "30min",
-          "assignee": "",
-          "author": "",
-          "tags": [
-            "security",
-            "sql-injection"
-          ],
-          "scope": "MAIN",
-          "quickFixAvailable": false,
-          "messageFormattings": []
-        },
-        {
-          "line": 70,
-          "type": "VULNERABILITY",
-          "severity": "blocker",
-          "message": "Potential SQL injection vulnerability detected. Use parameterized queries with placeholders ($1, $2, etc.) instead of string concatenation or fmt.Sprintf.",
-          "rule": "go:S2077",
-          "component": ":temp_new.go",
-          "project": "",
-          "hash": "73c435e94021d5b7ba1386ef63c03414",
-          "textRange": {
-            "startLine": 70,
-            "endLine": 70,
-            "startOffset": 0,
-            "endOffset": 95
-          },
-          "flows": [],
-          "effort": "30min",
-          "debt": "30min",
-          "assignee": "",
-          "author": "",
-          "tags": [
-            "security",
-            "sql-injection"
-          ],
-          "scope": "MAIN",
-          "quickFixAvailable": false,
-          "messageFormattings": []
-        },
-        {
-          "line": 17,
-          "type": "VULNERABILITY",
-          "severity": "blocker",
-          "message": "Hardcoded password detected. Use environment variables (os.Getenv) or secure configuration management instead.",
-          "rule": "go:S2068",
-          "component": ":temp_new.go",
-          "project": "",
-          "hash": "4a8bb22c77a1679f2edf92b13593f5a0",
-          "textRange": {
-            "startLine": 17,
-            "endLine": 17,
-            "startOffset": 0,
-            "endOffset": 24
-          },
-          "flows": [],
-          "effort": "15min",
-          "debt": "15min",
-          "assignee": "",
-          "author": "",
-          "tags": [
-            "security",
-            "credentials"
-          ],
-          "scope": "MAIN",
-          "quickFixAvailable": false,
-          "messageFormattings": []
-        },
-        {
-          "line": 18,
-          "type": "VULNERABILITY",
-          "severity": "blocker",
-          "message": "Hardcoded API key detected. Use environment variables (os.Getenv) or secure configuration management instead.",
-          "rule": "go:S2068",
-          "component": ":temp_new.go",
-          "project": "",
-          "hash": "36f06c36d2608cdb5fc2628f7919cceb",
-          "textRange": {
-            "startLine": 18,
-            "endLine": 18,
-            "startOffset": 0,
-            "endOffset": 40
-          },
-          "flows": [],
-          "effort": "15min",
-          "debt": "15min",
-          "assignee": "",
-          "author": "",
-          "tags": [
-            "security",
-            "credentials"
-          ],
-          "scope": "MAIN",
-          "quickFixAvailable": false,
-          "messageFormattings": []
-        },
-        {
-          "line": 96,
+          "line": 131,
           "type": "VULNERABILITY",
           "severity": "high",
           "message": "Potential broken access control: Handler 'adminPanel' appears to be privileged but lacks proper authorization checks.",
           "rule": "go:S5144",
           "component": ":temp_new.go",
           "project": "",
-          "hash": "1497d458166ec5dd821854feb150f992",
+          "hash": "1541b4584f737843359a45f31ac0a98d",
           "textRange": {
-            "startLine": 96,
-            "endLine": 96,
+            "startLine": 131,
+            "endLine": 131,
             "startOffset": 0,
             "endOffset": 57
           },
@@ -246,17 +162,17 @@
           "messageFormattings": []
         },
         {
-          "line": 96,
+          "line": 131,
           "type": "VULNERABILITY",
           "severity": "high",
           "message": "Potential broken access control: Handler 'adminPanel' appears to be privileged but lacks proper authorization checks.",
           "rule": "go:S5144",
           "component": ":temp_new.go",
           "project": "",
-          "hash": "1497d458166ec5dd821854feb150f992",
+          "hash": "1541b4584f737843359a45f31ac0a98d",
           "textRange": {
-            "startLine": 96,
-            "endLine": 96,
+            "startLine": 131,
+            "endLine": 131,
             "startOffset": 0,
             "endOffset": 57
           },
@@ -274,17 +190,45 @@
           "messageFormattings": []
         },
         {
-          "line": 89,
+          "line": 126,
+          "type": "VULNERABILITY",
+          "severity": "high",
+          "message": "Direct use of template.HTML detected: this bypasses automatic escaping and can introduce XSS. Avoid using template.HTML with untrusted input.",
+          "rule": "go:S5131",
+          "component": ":temp_new.go",
+          "project": "",
+          "hash": "018f998b902fab35187cd5654f94086a",
+          "textRange": {
+            "startLine": 126,
+            "endLine": 126,
+            "startOffset": 0,
+            "endOffset": 65
+          },
+          "flows": [],
+          "effort": "20min",
+          "debt": "20min",
+          "assignee": "",
+          "author": "",
+          "tags": [
+            "security",
+            "xss"
+          ],
+          "scope": "MAIN",
+          "quickFixAvailable": false,
+          "messageFormattings": []
+        },
+        {
+          "line": 125,
           "type": "VULNERABILITY",
           "severity": "high",
           "message": "Possible XSS: user-controlled variable 'userID' (from request) is written to a template/response without explicit escaping or validation.",
           "rule": "go:S5131",
           "component": ":temp_new.go",
           "project": "",
-          "hash": "3623ecbefb5580852bcab422fbca877a",
+          "hash": "17d60c82ccc7013f9855e552fb8be8fe",
           "textRange": {
-            "startLine": 89,
-            "endLine": 89,
+            "startLine": 125,
+            "endLine": 125,
             "startOffset": 0,
             "endOffset": 40
           },
@@ -302,19 +246,19 @@
           "messageFormattings": []
         },
         {
-          "line": 112,
+          "line": 171,
           "type": "VULNERABILITY",
           "severity": "high",
           "message": "Possible XSS: user-controlled variable 'target' (from request) is written to a template/response without explicit escaping or validation.",
           "rule": "go:S5131",
           "component": ":temp_new.go",
           "project": "",
-          "hash": "b23abb1384d1c933c37c238bc14f8453",
+          "hash": "708ec94c41aec6856e0ac150588f7802",
           "textRange": {
-            "startLine": 112,
-            "endLine": 112,
+            "startLine": 171,
+            "endLine": 171,
             "startOffset": 0,
-            "endOffset": 46
+            "endOffset": 48
           },
           "flows": [],
           "effort": "20min",
@@ -330,19 +274,19 @@
           "messageFormattings": []
         },
         {
-          "line": 11,
+          "line": 12,
           "type": "CODE_SMELL",
           "severity": "minor",
-          "message": "Unused import '_' (crypto/md5). Remove unused imports to improve code quality and reduce build size.",
+          "message": "Unused import '_' (github.com/mattn/go-sqlite3). Remove unused imports to improve code quality and reduce build size.",
           "rule": "go:F401",
           "component": ":temp_new.go",
           "project": "",
-          "hash": "377ca528bcf042fe565ec1ddc4bb2fe0",
+          "hash": "29ff4b0751f8e2cde19da04ff5f0143e",
           "textRange": {
-            "startLine": 11,
-            "endLine": 11,
+            "startLine": 12,
+            "endLine": 12,
             "startOffset": 0,
-            "endOffset": 49
+            "endOffset": 32
           },
           "flows": [],
           "effort": "2min",
@@ -358,47 +302,47 @@
           "messageFormattings": []
         },
         {
-          "line": 112,
-          "type": "VULNERABILITY",
+          "line": 30,
+          "type": "CODE_SMELL",
           "severity": "medium",
-          "message": "Potential unvalidated redirect: Redirect URL comes from user input. Validate and whitelist redirect URLs to prevent phishing attacks.",
-          "rule": "go:S5146",
+          "message": "Insufficient logging: Security-related function 'is_authenticated' lacks proper logging. Add logging for security events to enable monitoring and incident response.",
+          "rule": "go:S2629",
           "component": ":temp_new.go",
           "project": "",
-          "hash": "b247ec7019856936d2b3c2daead4a112",
+          "hash": "af772f0d43c578b155493b63243e3eab",
           "textRange": {
-            "startLine": 112,
-            "endLine": 112,
+            "startLine": 30,
+            "endLine": 30,
             "startOffset": 0,
-            "endOffset": 46
+            "endOffset": 45
           },
           "flows": [],
-          "effort": "15min",
-          "debt": "15min",
+          "effort": "10min",
+          "debt": "10min",
           "assignee": "",
           "author": "",
           "tags": [
             "security",
-            "redirect"
+            "logging"
           ],
           "scope": "MAIN",
           "quickFixAvailable": false,
           "messageFormattings": []
         },
         {
-          "line": 96,
+          "line": 35,
           "type": "CODE_SMELL",
           "severity": "medium",
-          "message": "Insufficient logging: Security-related function 'adminPanel' lacks proper logging. Add logging for security events to enable monitoring and incident response.",
+          "message": "Insufficient logging: Security-related function 'is_admin' lacks proper logging. Add logging for security events to enable monitoring and incident response.",
           "rule": "go:S2629",
           "component": ":temp_new.go",
           "project": "",
-          "hash": "9a59185ef5652dc29dbd83c60ac7b388",
+          "hash": "99aa65004fefcf0b88630017e3b7655b",
           "textRange": {
-            "startLine": 96,
-            "endLine": 96,
+            "startLine": 35,
+            "endLine": 35,
             "startOffset": 0,
-            "endOffset": 57
+            "endOffset": 37
           },
           "flows": [],
           "effort": "10min",
@@ -415,7 +359,7 @@
         }
       ],
       "fixes_applied": {
-        "ai_remediated": 11,
+        "ai_remediated": 8,
         "confidence_score": 0.9,
         "model_used": "llama-3.3-70b-versatile"
       }
@@ -424,187 +368,19 @@
       "path": "vul_files/new.js",
       "issues": [
         {
-          "line": 49,
-          "type": "VULNERABILITY",
-          "severity": "blocker",
-          "message": "Potential SQL injection vulnerability detected. Use parameterized queries or prepared statements instead of string concatenation.",
-          "rule": "js:S2077",
-          "component": ":temp_new.js",
-          "project": "",
-          "hash": "7f7a4f73723b2d1c3d7dc3f067f13b7b",
-          "textRange": {
-            "startLine": 49,
-            "endLine": 49,
-            "startOffset": 0,
-            "endOffset": 76
-          },
-          "flows": [],
-          "effort": "30min",
-          "debt": "30min",
-          "assignee": "",
-          "author": "",
-          "tags": [
-            "security",
-            "sql-injection"
-          ],
-          "scope": "MAIN",
-          "quickFixAvailable": false,
-          "messageFormattings": []
-        },
-        {
-          "line": 11,
-          "type": "VULNERABILITY",
-          "severity": "blocker",
-          "message": "Hardcoded API key detected. Use environment variables (process.env) or secure configuration management instead.",
-          "rule": "js:S2068",
-          "component": ":temp_new.js",
-          "project": "",
-          "hash": "ccef68cf9f0719bc49e1fef695616a71",
-          "textRange": {
-            "startLine": 11,
-            "endLine": 11,
-            "startOffset": 0,
-            "endOffset": 40
-          },
-          "flows": [],
-          "effort": "15min",
-          "debt": "15min",
-          "assignee": "",
-          "author": "",
-          "tags": [
-            "security",
-            "credentials"
-          ],
-          "scope": "MAIN",
-          "quickFixAvailable": false,
-          "messageFormattings": []
-        },
-        {
-          "line": 11,
-          "type": "VULNERABILITY",
-          "severity": "blocker",
-          "message": "Hardcoded secret in const declaration. Use environment variables (process.env) or secure configuration management instead.",
-          "rule": "js:S2068",
-          "component": ":temp_new.js",
-          "project": "",
-          "hash": "7258a971f18c690129b1ad24b1e6c090",
-          "textRange": {
-            "startLine": 11,
-            "endLine": 11,
-            "startOffset": 0,
-            "endOffset": 40
-          },
-          "flows": [],
-          "effort": "15min",
-          "debt": "15min",
-          "assignee": "",
-          "author": "",
-          "tags": [
-            "security",
-            "credentials"
-          ],
-          "scope": "MAIN",
-          "quickFixAvailable": false,
-          "messageFormattings": []
-        },
-        {
-          "line": 63,
-          "type": "VULNERABILITY",
-          "severity": "high",
-          "message": "Potential broken access control: Privileged route/endpoint lacks proper authorization checks. Add authentication/authorization middleware.",
-          "rule": "js:S5144",
-          "component": ":temp_new.js",
-          "project": "",
-          "hash": "62c744ff7cf2d6b28abb35082ffc8c05",
-          "textRange": {
-            "startLine": 63,
-            "endLine": 63,
-            "startOffset": 0,
-            "endOffset": 33
-          },
-          "flows": [],
-          "effort": "20min",
-          "debt": "20min",
-          "assignee": "",
-          "author": "",
-          "tags": [
-            "security",
-            "access-control"
-          ],
-          "scope": "MAIN",
-          "quickFixAvailable": false,
-          "messageFormattings": []
-        },
-        {
-          "line": 5,
-          "type": "CODE_SMELL",
-          "severity": "minor",
-          "message": "Unused import 'crypto'. Remove unused imports to improve code quality and reduce bundle size.",
-          "rule": "js:F401",
-          "component": ":temp_new.js",
-          "project": "",
-          "hash": "6363ce795a0bd65bdf56f7b058f11a2b",
-          "textRange": {
-            "startLine": 5,
-            "endLine": 5,
-            "startOffset": 0,
-            "endOffset": 75
-          },
-          "flows": [],
-          "effort": "2min",
-          "debt": "2min",
-          "assignee": "",
-          "author": "",
-          "tags": [
-            "code-quality",
-            "unused-code"
-          ],
-          "scope": "MAIN",
-          "quickFixAvailable": false,
-          "messageFormattings": []
-        },
-        {
-          "line": 6,
-          "type": "CODE_SMELL",
-          "severity": "minor",
-          "message": "Unused import 'outdatedLib'. Remove unused imports to improve code quality and reduce bundle size.",
-          "rule": "js:F401",
-          "component": ":temp_new.js",
-          "project": "",
-          "hash": "1bfe53169ee2822e465e3b58a9b30ab3",
-          "textRange": {
-            "startLine": 6,
-            "endLine": 6,
-            "startOffset": 0,
-            "endOffset": 74
-          },
-          "flows": [],
-          "effort": "2min",
-          "debt": "2min",
-          "assignee": "",
-          "author": "",
-          "tags": [
-            "code-quality",
-            "unused-code"
-          ],
-          "scope": "MAIN",
-          "quickFixAvailable": false,
-          "messageFormattings": []
-        },
-        {
-          "line": 79,
+          "line": 113,
           "type": "VULNERABILITY",
           "severity": "medium",
           "message": "Potential unvalidated redirect: Redirect URL comes from user input. Validate and whitelist redirect URLs to prevent phishing attacks.",
           "rule": "js:S5146",
           "component": ":temp_new.js",
           "project": "",
-          "hash": "a326fe1296f97c17b2c637f838941b2b",
+          "hash": "05873af1af1a92e7a790157abbcad55d",
           "textRange": {
-            "startLine": 79,
-            "endLine": 79,
+            "startLine": 113,
+            "endLine": 113,
             "startOffset": 0,
-            "endOffset": 51
+            "endOffset": 22
           },
           "flows": [],
           "effort": "15min",
@@ -620,19 +396,19 @@
           "messageFormattings": []
         },
         {
-          "line": 63,
+          "line": 27,
           "type": "CODE_SMELL",
           "severity": "medium",
           "message": "Insufficient logging: Security-related function/endpoint lacks proper logging. Add logging for security events to enable monitoring and incident response.",
           "rule": "js:S2629",
           "component": ":temp_new.js",
           "project": "",
-          "hash": "1b607c34071425eb807517c007eed163",
+          "hash": "f021760b775370ed54c1cf09b71b94e5",
           "textRange": {
-            "startLine": 63,
-            "endLine": 63,
+            "startLine": 27,
+            "endLine": 27,
             "startOffset": 0,
-            "endOffset": 33
+            "endOffset": 32
           },
           "flows": [],
           "effort": "10min",
@@ -648,56 +424,56 @@
           "messageFormattings": []
         },
         {
-          "line": 50,
+          "line": 32,
           "type": "CODE_SMELL",
-          "severity": "low",
-          "message": "Error handling without logging: Errors should be logged for debugging and monitoring purposes.",
+          "severity": "medium",
+          "message": "Insufficient logging: Security-related function/endpoint lacks proper logging. Add logging for security events to enable monitoring and incident response.",
           "rule": "js:S2629",
           "component": ":temp_new.js",
           "project": "",
-          "hash": "589013f534de00b488d509edd06517e4",
+          "hash": "61db4e5e4ffa38278caf00c527734103",
           "textRange": {
-            "startLine": 50,
-            "endLine": 50,
+            "startLine": 32,
+            "endLine": 32,
             "startOffset": 0,
-            "endOffset": 53
+            "endOffset": 24
           },
           "flows": [],
-          "effort": "5min",
-          "debt": "5min",
+          "effort": "10min",
+          "debt": "10min",
           "assignee": "",
           "author": "",
           "tags": [
-            "logging",
-            "error-handling"
+            "security",
+            "logging"
           ],
           "scope": "MAIN",
           "quickFixAvailable": false,
           "messageFormattings": []
         },
         {
-          "line": 65,
+          "line": 87,
           "type": "CODE_SMELL",
-          "severity": "low",
-          "message": "Error handling without logging: Errors should be logged for debugging and monitoring purposes.",
+          "severity": "medium",
+          "message": "Insufficient logging: Security-related function/endpoint lacks proper logging. Add logging for security events to enable monitoring and incident response.",
           "rule": "js:S2629",
           "component": ":temp_new.js",
           "project": "",
-          "hash": "48ef1216236e4f38c79f1ef490e68ff0",
+          "hash": "12e81a602b4008183a54317cc1c873cf",
           "textRange": {
-            "startLine": 65,
-            "endLine": 65,
+            "startLine": 87,
+            "endLine": 87,
             "startOffset": 0,
-            "endOffset": 53
+            "endOffset": 39
           },
           "flows": [],
-          "effort": "5min",
-          "debt": "5min",
+          "effort": "10min",
+          "debt": "10min",
           "assignee": "",
           "author": "",
           "tags": [
-            "logging",
-            "error-handling"
+            "security",
+            "logging"
           ],
           "scope": "MAIN",
           "quickFixAvailable": false,
@@ -705,7 +481,7 @@
         }
       ],
       "fixes_applied": {
-        "ai_remediated": 10,
+        "ai_remediated": 4,
         "confidence_score": 0.9,
         "model_used": "llama-3.3-70b-versatile"
       }
